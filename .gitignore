@@ -7,7 +7,8 @@ db.sqlite3
 media
 
 # config
-config_family_assistant.json
+/etc/
+etc/config_family_assistant.json
 
 # Backup files #
 *.bak
