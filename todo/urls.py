@@ -3,5 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.TodoHomeView.as_view(), name='todo-home'),
+    path('', views.TasksListView.as_view(), name='todo-all-tasks'),
+    path('new', views.TaskCreateView.as_view(), name='todo-new-task'),
 ]
