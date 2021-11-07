@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from todo.views import Homepage
-from profiles.views import register
+from profiles.views import RegisterView
 
 
 urlpatterns = [
@@ -28,9 +28,9 @@ urlpatterns = [
     path('profile/', include('profiles.urls')),
 
     # authentication paths
-    path('register/', register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='profiles/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='profiles/logout.html'), name='logout'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', extra_context={'extra_title': 'Log In'}), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='auth/logout.html', extra_context={'extra_title': 'Logout'}), name='logout'),
     path('password-reset/',
          auth_views.PasswordResetView.as_view(template_name='profiles/password_reset.html'),
          name='password_reset'),

@@ -13,8 +13,7 @@
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Edit profile:</legend>
-            {{ p_form|crispy }}
-            {{ u_form|crispy }}
+            {{ form|crispy }}
         </fieldset>
         <div class="form-group">
             <a type="button" class="btn" href="{% url 'profile' %}">Cancel</a>

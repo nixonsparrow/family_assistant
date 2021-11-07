@@ -9,10 +9,10 @@ class HomePageTestCase(TestCase):
         self.response = self.client.get(reverse_lazy('homepage'))
 
     def test_site_header(self):
-        self.assertContains(self.response, '<title>Family helper</title>')
+        self.assertContains(self.response, 'Family Helper')
 
     def test_template(self):
-        self.assertTemplateUsed(self.response, 'todo/homepage.html')
+        self.assertTemplateUsed(self.response, 'homepage.html')
 
 
 class ToDoTaskListTestCase(TestCase):
