@@ -10,7 +10,8 @@ class Task(models.Model):
     is_finished = models.BooleanField('Finished', default=False)
     success = models.BooleanField('Success', default=False)
     created_by = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True,
-                                   related_name='created_tasks')
+                                   related_name='tasks_created')
+    content = models.CharField('Title', max_length=100, default=None, null=False, blank=False)
 
     def complete(self):
         self.is_finished = True

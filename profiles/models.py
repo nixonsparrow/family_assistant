@@ -10,6 +10,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField('Profile Image', default='default.jpg', upload_to='profile_images')
+    quote = models.CharField('Favourite Quote', default=None, null=True, blank=True, max_length=200)
 
     def __str__(self):
         return f'{self.user.username} Profile'
