@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Task(models.Model):
@@ -8,6 +9,8 @@ class Task(models.Model):
     title = models.CharField('Title', max_length=100, default=None, null=False, blank=False)
     is_finished = models.BooleanField('Finished', default=False)
     success = models.BooleanField('Success', default=False)
+    created_by = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_tasks')
 
     def complete(self):
         self.is_finished = True
