@@ -29,18 +29,23 @@ urlpatterns = [
 
     # authentication paths
     path('register/', RegisterView.as_view(), name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', extra_context={'extra_title': 'Log In'}), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='auth/logout.html', extra_context={'extra_title': 'Logout'}), name='logout'),
+    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html',
+         extra_context={'extra_title': 'Log In'}), name='login'),
+    path('logout/',
+         auth_views.LogoutView.as_view(template_name='auth/logout.html',
+         extra_context={'extra_title': 'Logout'}), name='logout'),
+
+    # password reset paths
     path('password-reset/',
-         auth_views.PasswordResetView.as_view(template_name='profiles/password_reset.html'),
-         name='password_reset'),
+         auth_views.PasswordResetView.as_view(template_name='profiles/password_reset.html',
+         extra_context={'extra_title': 'Password Reset'}), name='password_reset'),
     path('password-reset-done',
-         auth_views.PasswordResetDoneView.as_view(template_name='profiles/password_reset_done.html'),
-         name='password_reset_done'),
+         auth_views.PasswordResetDoneView.as_view(template_name='profiles/password_reset_done.html',
+         extra_context={'extra_title': 'Password Reset Done'}), name='password_reset_done'),
     path('password-reset-confirm/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(template_name='profiles/password_reset_confirm.html'),
-         name='password_reset_confirm'),
+         auth_views.PasswordResetConfirmView.as_view(template_name='profiles/password_reset_confirm.html',
+         extra_context={'extra_title': 'Password Reset Confirm'}), name='password_reset_confirm'),
     path('password-reset-complete/',
-         auth_views.PasswordResetView.as_view(template_name='profiles/password_reset_complete.html'),
-         name='password_reset_complete'),
+         auth_views.PasswordResetView.as_view(template_name='profiles/password_reset_complete.html',
+         extra_context={'extra_title': 'Password Reset Complete'}), name='password_reset_complete'),
 ]
