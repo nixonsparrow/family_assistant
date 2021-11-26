@@ -1,5 +1,12 @@
-body {
+nav {
+    background-color: lightgray;
+}
 
+.main_body {
+    color: #333333;
+    #display: flex;
+    margin-top: 5rem;
+    background-color: black;
 }
 
 .nixons_signature {
