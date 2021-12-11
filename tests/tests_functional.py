@@ -1,41 +1,25 @@
-from time import sleep, time
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from time import sleep
+from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
+from django.urls import reverse
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as cond
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from todo.models import Task
 
 
-MAX_WAIT = 2
-
-
-class LoggingTestCase(StaticLiveServerTestCase):
+class LoggingTestCase(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
         self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
                                                   email='testuser@test.com')
 
     def tearDown(self):
         self.browser.quit()
-
-    # old method for perfect timing, left just for history :)
-    # def wait_for_site_to_load_the_title(self, title):
-    #     start_time = time()
-    #     while True:
-    #         try:
-    #             print(f'Sprawdź!  {title}')
-    #             self.assertIn(title, self.browser.title)
-    #             print(f'Jest!     {title}')
-    #             return
-    #         except(AssertionError, WebDriverException) as e:
-    #             print(f'Czekaj!   {title}')
-    #             if time() - start_time > MAX_WAIT:
-    #                 raise e
-    #             sleep(0.5)
 
     def test_base_html(self):
         self.browser.get(self.live_server_url)
@@ -69,9 +53,11 @@ class LoggingTestCase(StaticLiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Logout'))
 
 
-class UpdateProfileTestCase(StaticLiveServerTestCase):
+class UpdateProfileTestCase(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
         self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
                                                   email='testuser@test.com')
 
@@ -82,7 +68,7 @@ class UpdateProfileTestCase(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url + '/profile/edit/')
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
-        # Log in
+        # log in
         inputbox = self.browser.find_element_by_id('id_username')
         inputbox.send_keys(self.test_user.username)
         inputbox = self.browser.find_element_by_id('id_password')
@@ -93,7 +79,7 @@ class UpdateProfileTestCase(StaticLiveServerTestCase):
         # collect old data
         old = [self.test_user.username, self.test_user.email, self.test_user.first_name, self.test_user.last_name]
 
-        # Change username, e-mail, first and last name
+        # change username, e-mail, first and last name
         inputbox = self.browser.find_element_by_id('id_username')
         inputbox.clear()
         inputbox.send_keys('JohnnyBravo')
@@ -123,9 +109,11 @@ class UpdateProfileTestCase(StaticLiveServerTestCase):
             self.assertNotEqual(old[x], new[x])
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
 
     def tearDown(self):
         self.browser.quit()
@@ -138,15 +126,13 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.find_element_by_id('menu_register').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))
 
+        # enter new user credentials
         inputbox = self.browser.find_element_by_id('id_username')
         inputbox.send_keys('TestUser123')
-
         inputbox = self.browser.find_element_by_id('id_email')
         inputbox.send_keys('TestUser@test.com')
-
         inputbox = self.browser.find_element_by_id('id_password1')
         inputbox.send_keys('TestPassword123!@#')
-
         inputbox = self.browser.find_element_by_id('id_password2')
         inputbox.send_keys('TestPassword123!@#')
         inputbox.send_keys(Keys.ENTER)
@@ -172,9 +158,11 @@ class NewVisitorTest(StaticLiveServerTestCase):
         WebDriverWait(self.browser, 5).until(cond.title_contains('Logout'))
 
 
-class CreateNewTask(StaticLiveServerTestCase):
+class CreateNewTask(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
         self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
                                                   email='testuser@test.com')
 
@@ -200,13 +188,14 @@ class CreateNewTask(StaticLiveServerTestCase):
 
         # check if test show
         WebDriverWait(self.browser, 5).until(cond.title_contains('Tasks'))
-        self.assertEqual(self.browser.find_element_by_id('task_1').text, 'Buy a bread')
+        print()
+        self.assertIn('Buy a bread', [task.text for task in self.browser.find_elements_by_class_name('task')])
 
     def test_if_user_can_create_multiple_new_tasks(self):
         self.browser.get(self.live_server_url + '/login')
         WebDriverWait(self.browser, 5).until(cond.title_contains('Log In'))
 
-        # Log in
+        # log in
         inputbox = self.browser.find_element_by_id('id_username')
         inputbox.send_keys(self.test_user.username)
         inputbox = self.browser.find_element_by_id('id_password')
@@ -228,27 +217,29 @@ class CreateNewTask(StaticLiveServerTestCase):
         # check if all tasks show
         WebDriverWait(self.browser, 5).until(cond.title_contains('Tasks'))
 
-        for a_task in self.browser.find_elements_by_id(f'task_'):
-            self.assertIn(a_task.test, task_names)
+        for a_task in self.browser.find_elements_by_class_name('task'):
+            self.assertIn(a_task.text, task_names)
 
 
-class UpdateTask(StaticLiveServerTestCase):
+class UpdateTask(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
+        self.test_user2 = User.objects.create_user(username='TestUser2', password='TestPass123',
                                                   email='testuser@test.com')
-        self.task = Task.objects.create(created_by=self.test_user, title='Buy some milk', content='2 litres of Rice')
+        self.task = Task.objects.create(created_by=self.test_user2, title='Buy some milk', content='2 litres of Rice')
 
     def tearDown(self):
         self.browser.quit()
 
     def test_if_user_can_update_his_task(self):
-        self.browser.get(self.live_server_url + '/tasks/1')
+        self.browser.get(self.live_server_url + reverse('todo-task-update', kwargs={'pk': self.task.id}))
         WebDriverWait(self.browser, 5).until(cond.title_contains('Log In'))
 
         # Log in
         inputbox = self.browser.find_element_by_id('id_username')
-        inputbox.send_keys(self.test_user.username)
+        inputbox.send_keys('TestUser2')
         inputbox = self.browser.find_element_by_id('id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
@@ -257,14 +248,13 @@ class UpdateTask(StaticLiveServerTestCase):
         # update task
         inputbox = self.browser.find_element_by_id('id_title')
         inputbox.clear()
-        inputbox.send_keys('But a lot of milk')
+        inputbox.send_keys('Buy a lot of milk')
         inputbox.send_keys(Keys.ENTER)
 
         # check if all tasks show
         WebDriverWait(self.browser, 5).until(cond.title_contains('Tasks'))
-        self.assertEqual(self.browser.find_element_by_id('task_1').text, 'But a lot of milk',
+        self.assertEqual(self.browser.find_element_by_id(f'task_{self.task.id}').text, 'Buy a lot of milk',
                          msg='Updated task title is not visible on list of tasks.')
-        self.browser.get(self.live_server_url + '/tasks/1')
-        WebDriverWait(self.browser, 5).until(cond.title_contains('But a lot of milk'),
+        self.browser.get(self.live_server_url + f'/tasks/{self.task.id}')
+        WebDriverWait(self.browser, 5).until(cond.title_contains('Buy a lot of milk'),
                       message='Old task title is visible on an update task site.')
-
