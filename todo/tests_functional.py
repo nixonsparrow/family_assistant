@@ -20,30 +20,8 @@ class CreateNewTask(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_if_user_can_create_a_new_task(self):
-        self.browser.get(self.live_server_url + '/new-task')
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
-
-        # Log in
-        inputbox = self.browser.find_element_by_id('id_username')
-        inputbox.send_keys(self.test_user.username)
-        inputbox = self.browser.find_element_by_id('id_password')
-        inputbox.send_keys('TestPass123')
-        inputbox.send_keys(Keys.ENTER)
-        WebDriverWait(self.browser, 10).until(cond.title_contains('New Task'))
-
-        # create task
-        inputbox = self.browser.find_element_by_id('id_title')
-        inputbox.send_keys('Buy a bread')
-        inputbox.send_keys(Keys.ENTER)
-
-        # check if test show
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
-        print()
-        self.assertIn('Buy a bread', [task.text for task in self.browser.find_elements_by_class_name('task')])
-
-    def test_if_user_can_create_multiple_new_tasks(self):
-        self.browser.get(self.live_server_url + '/login')
+    def log_in(self):
+        self.browser.get(self.live_server_url + reverse('login'))
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in
@@ -54,16 +32,34 @@ class CreateNewTask(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
 
+    def test_if_user_can_create_a_new_task(self):
+        self.log_in()
+        self.browser.get(self.live_server_url + reverse('todo-new-task'))
+        WebDriverWait(self.browser, 10).until(cond.title_contains('New Task'))
+
+        # create task
+        inputbox = self.browser.find_element_by_id('id_title')
+        inputbox.send_keys('Buy a bread')
+        inputbox.send_keys(Keys.ENTER)
+
+        # check if test show
+        WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
+        self.assertIn('Buy a bread', [task.text for task in self.browser.find_elements_by_class_name('task')])
+
+    def test_if_user_can_create_multiple_new_tasks(self):
+        self.log_in()
+
         task_names = ['Buy some milk', 'Drink 2 litres of water', 'I like pie']
 
         for task_name in task_names:
-            self.browser.get(self.live_server_url + '/new-task')
+            self.browser.get(self.live_server_url + reverse('todo-new-task'))
             WebDriverWait(self.browser, 10).until(cond.title_contains('New Task'))
 
             # create task
             inputbox = self.browser.find_element_by_id('id_title')
             inputbox.send_keys(task_name)
             inputbox.send_keys(Keys.ENTER)
+            WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
 
         # check if all tasks show
         WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
@@ -106,6 +102,6 @@ class UpdateTask(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
         self.assertEqual(self.browser.find_element_by_id(f'task_{self.task.id}').text, 'Buy a lot of milk',
                          msg='Updated task title is not visible on list of tasks.')
-        self.browser.get(self.live_server_url + f'/tasks/{self.task.id}')
+        self.browser.get(self.live_server_url + reverse('todo-task-update', kwargs={'pk': self.task.id}))
         WebDriverWait(self.browser, 10).until(cond.title_contains('Buy a lot of milk'),
                       message='Old task title is visible on an update task site.')

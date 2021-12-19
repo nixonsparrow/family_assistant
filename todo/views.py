@@ -1,6 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic.edit import FormMixin
 from django.views.generic import ListView, CreateView, TemplateView, UpdateView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -48,4 +46,3 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('todo-all-tasks')
-

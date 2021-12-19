@@ -1,5 +1,6 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.contrib.auth.models import User
+from django.urls.base import reverse
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.options import Options
@@ -20,7 +21,7 @@ class NavMenuTestCase(LiveServerTestCase):
         self.browser.quit()
 
     def enter_logged_in(self):
-        self.browser.get(self.live_server_url + '/login/')
+        self.browser.get(self.live_server_url + reverse('login'))
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in
@@ -35,7 +36,6 @@ class NavMenuTestCase(LiveServerTestCase):
     def enter_not_logged_in(self):
         self.browser.get(self.live_server_url)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
-        self.browser.find_element_by_id('toggle_button').click()
 
     def test_base_html(self):
         self.browser.get(self.live_server_url)
@@ -121,42 +121,3 @@ class NewVisitorTest(LiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
-
-    def test_register_and_log_in(self):
-        self.browser.get(self.live_server_url)
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
-
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_register').click()
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))
-
-        # enter new user credentials
-        inputbox = self.browser.find_element_by_id('id_username')
-        inputbox.send_keys('TestUser123')
-        inputbox = self.browser.find_element_by_id('id_email')
-        inputbox.send_keys('TestUser@test.com')
-        inputbox = self.browser.find_element_by_id('id_password1')
-        inputbox.send_keys('TestPassword123!@#')
-        inputbox = self.browser.find_element_by_id('id_password2')
-        inputbox.send_keys('TestPassword123!@#')
-        inputbox.send_keys(Keys.ENTER)
-
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
-
-        # check if new user can login by username and password
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_log_in').click()
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
-
-        # log in with new credentials
-        inputbox = self.browser.find_element_by_id('id_username')
-        inputbox.send_keys('TestUser123')
-        inputbox = self.browser.find_element_by_id('id_password')
-        inputbox.send_keys('TestPassword123!@#')
-        inputbox.send_keys(Keys.ENTER)
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))  # msg = new user probably cannot log in
-
-        # logout
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_logout').click()
-        WebDriverWait(self.browser, 10).until(cond.title_contains('Logout'))
