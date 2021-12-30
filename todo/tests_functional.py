@@ -6,6 +6,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as cond
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from todo.models import Task
 
 
@@ -25,9 +26,9 @@ class CreateNewTask(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys(self.test_user.username)
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
@@ -38,13 +39,13 @@ class CreateNewTask(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('New Task'))
 
         # create task
-        inputbox = self.browser.find_element_by_id('id_title')
+        inputbox = self.browser.find_element(By.ID, 'id_title')
         inputbox.send_keys('Buy a bread')
         inputbox.send_keys(Keys.ENTER)
 
         # check if test show
         WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
-        self.assertIn('Buy a bread', [task.text for task in self.browser.find_elements_by_class_name('task')])
+        self.assertIn('Buy a bread', [task.text for task in self.browser.find_elements(By.CLASS_NAME, 'task')])
 
     def test_if_user_can_create_multiple_new_tasks(self):
         self.log_in()
@@ -56,7 +57,7 @@ class CreateNewTask(LiveServerTestCase):
             WebDriverWait(self.browser, 10).until(cond.title_contains('New Task'))
 
             # create task
-            inputbox = self.browser.find_element_by_id('id_title')
+            inputbox = self.browser.find_element(By.ID, 'id_title')
             inputbox.send_keys(task_name)
             inputbox.send_keys(Keys.ENTER)
             WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
@@ -64,7 +65,7 @@ class CreateNewTask(LiveServerTestCase):
         # check if all tasks show
         WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
 
-        for a_task in self.browser.find_elements_by_class_name('task'):
+        for a_task in self.browser.find_elements(By.CLASS_NAME, 'task'):
             self.assertIn(a_task.text, task_names)
 
 
@@ -85,22 +86,22 @@ class UpdateTask(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # Log in
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys('TestUser2')
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Buy some milk'))
 
         # update task
-        inputbox = self.browser.find_element_by_id('id_title')
+        inputbox = self.browser.find_element(By.ID, 'id_title')
         inputbox.clear()
         inputbox.send_keys('Buy a lot of milk')
         inputbox.send_keys(Keys.ENTER)
 
         # check if all tasks show
         WebDriverWait(self.browser, 10).until(cond.title_contains('Tasks'))
-        self.assertEqual(self.browser.find_element_by_id(f'task_{self.task.id}').text, 'Buy a lot of milk',
+        self.assertEqual(self.browser.find_element(By.ID, f'task_{self.task.id}').text, 'Buy a lot of milk',
                          msg='Updated task title is not visible on list of tasks.')
         self.browser.get(self.live_server_url + reverse('todo-task-update', kwargs={'pk': self.task.id}))
         WebDriverWait(self.browser, 10).until(cond.title_contains('Buy a lot of milk'),

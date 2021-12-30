@@ -24,13 +24,13 @@ class RegisterTestCase(LiveServerTestCase):
     def enter_register_credentials(self, username='NewTestUser', email='newuser@email.com',
                                    password1='TestPassword123!@#', password2=None, enter=True):
         if not password2: password2 = password1
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys(username)
-        inputbox = self.browser.find_element_by_id('id_email')
+        inputbox = self.browser.find_element(By.ID, 'id_email')
         inputbox.send_keys(email)
-        inputbox = self.browser.find_element_by_id('id_password1')
+        inputbox = self.browser.find_element(By.ID, 'id_password1')
         inputbox.send_keys(password1)
-        inputbox = self.browser.find_element_by_id('id_password2')
+        inputbox = self.browser.find_element(By.ID, 'id_password2')
         inputbox.send_keys(password2)
         if enter:
             inputbox.send_keys(Keys.ENTER)
@@ -39,8 +39,8 @@ class RegisterTestCase(LiveServerTestCase):
         self.browser.get(self.live_server_url)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
 
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_register').click()
+        self.browser.find_element(By.ID, 'toggle_button').click()
+        self.browser.find_element(By.ID, 'menu_register').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))
 
         # enter new user credentials
@@ -48,21 +48,21 @@ class RegisterTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
 
         # check if new user can login by username and password
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_log_in').click()
+        self.browser.find_element(By.ID, 'toggle_button').click()
+        self.browser.find_element(By.ID, 'menu_log_in').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in with new credentials
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys('NewTestUser')
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPassword123!@#')
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))  # msg = new user probably cannot log in
 
         # logout
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_logout').click()
+        self.browser.find_element(By.ID, 'toggle_button').click()
+        self.browser.find_element(By.ID, 'menu_logout').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Logout'))
 
     def test_register_password_not_equal(self):
@@ -70,7 +70,7 @@ class RegisterTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))
 
         with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_id('error_1_id_password2')
+            self.browser.find_element(By.ID, 'error_1_id_password2')
 
         self.enter_register_credentials(password2='WrongPassword123!@#')
         WebDriverWait(self.browser, 10).until(cond.presence_of_element_located((By.ID, "error_1_id_password2")))
@@ -80,7 +80,7 @@ class RegisterTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))
 
         with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_id('error_1_id_password2')
+            self.browser.find_element(By.ID, 'error_1_id_password2')
 
         self.enter_register_credentials(email='wrong#email.duh')
         WebDriverWait(self.browser, 10).until(cond.title_contains('Register'))  # no redirect because of wrong email
@@ -102,9 +102,9 @@ class UpdateProfileTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys(self.test_user.username)
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Edit Profile'))
@@ -113,16 +113,16 @@ class UpdateProfileTestCase(LiveServerTestCase):
         old = [self.test_user.username, self.test_user.email, self.test_user.first_name, self.test_user.last_name]
 
         # change username, e-mail, first and last name
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.clear()
         inputbox.send_keys('JohnnyBravo')
-        inputbox = self.browser.find_element_by_id('id_email')
+        inputbox = self.browser.find_element(By.ID, 'id_email')
         inputbox.clear()
         inputbox.send_keys('johnnybravo@test.com')
-        inputbox = self.browser.find_element_by_id('id_first_name')
+        inputbox = self.browser.find_element(By.ID, 'id_first_name')
         inputbox.clear()
         inputbox.send_keys('John')
-        inputbox = self.browser.find_element_by_id('id_last_name')
+        inputbox = self.browser.find_element(By.ID, 'id_last_name')
         inputbox.clear()
         inputbox.send_keys('Alpha')
         inputbox.send_keys(Keys.ENTER)
@@ -132,10 +132,10 @@ class UpdateProfileTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Edit Profile'))
 
         new = [
-            self.browser.find_element_by_id('id_username').get_attribute("value"),
-            self.browser.find_element_by_id('id_email').get_attribute("value"),
-            self.browser.find_element_by_id('id_first_name').get_attribute("value"),
-            self.browser.find_element_by_id('id_last_name').get_attribute("value")
+            self.browser.find_element(By.ID, 'id_username').get_attribute("value"),
+            self.browser.find_element(By.ID, 'id_email').get_attribute("value"),
+            self.browser.find_element(By.ID, 'id_first_name').get_attribute("value"),
+            self.browser.find_element(By.ID, 'id_last_name').get_attribute("value")
         ]
 
         for i in range(4):

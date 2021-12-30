@@ -3,10 +3,11 @@ from django.contrib.auth.models import User
 from django.urls.base import reverse
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as cond
-from selenium.webdriver.common.keys import Keys
 
 
 class NavMenuTestCase(LiveServerTestCase):
@@ -25,9 +26,9 @@ class NavMenuTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys(self.test_user.username)
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
         # wait until redirects to homepage is completed
@@ -44,40 +45,40 @@ class NavMenuTestCase(LiveServerTestCase):
         # Is the title correct?
         self.assertIn('Family Helper', self.browser.title, msg="Browser title was " + self.browser.title)
         # Is there Nixon's signature?
-        nixon_sign = self.browser.find_element_by_class_name('nixons_signature')
+        nixon_sign = self.browser.find_element(By.CLASS_NAME, 'nixons_signature')
         self.assertIn('© Copyrights - Nixon Sparrow', nixon_sign.text)
 
     # logged in menu links - user supposed to be able to see
     def test_if_logged_in_user_can_see_links_in_navigation_menu_that_should_see(self):
         self.enter_logged_in()
 
-        self.assertTrue(self.browser.find_element_by_id('menu_todo'))
-        self.assertTrue(self.browser.find_element_by_id('menu_logout'))
+        self.assertTrue(self.browser.find_element(By.ID, 'menu_todo'))
+        self.assertTrue(self.browser.find_element(By.ID, 'menu_logout'))
 
     # logged in menu links - user supposed to be unable to see
     def test_if_logged_in_user_can_see_links_in_navigation_menu_that_should_not_see(self):
         self.enter_logged_in()
 
         with self.assertRaises(NoSuchElementException):
-            self.assertTrue(self.browser.find_element_by_id('menu_log_in'))
+            self.assertTrue(self.browser.find_element(By.ID, 'menu_log_in'))
         with self.assertRaises(NoSuchElementException):
-            self.assertTrue(self.browser.find_element_by_id('menu_register'))
+            self.assertTrue(self.browser.find_element(By.ID, 'menu_register'))
 
     # not logged in menu links - anonymous user supposed to be able to see
     def test_if_not_logged_in_user_can_see_links_in_navigation_menu_that_should_see(self):
         self.enter_not_logged_in()
 
         with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_id('menu_todo')
+            self.browser.find_element(By.ID, 'menu_todo')
         with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_id('menu_logout')
+            self.browser.find_element(By.ID, 'menu_logout')
 
     # not logged in menu links - anonymous user supposed to be able to see
     def test_if_not_logged_in_user_can_see_links_in_navigation_menu_that_should_not_see(self):
         self.enter_not_logged_in()
 
-        self.assertTrue(self.browser.find_element_by_id('menu_log_in'))
-        self.assertTrue(self.browser.find_element_by_id('menu_register'))
+        self.assertTrue(self.browser.find_element(By.ID, 'menu_log_in'))
+        self.assertTrue(self.browser.find_element(By.ID, 'menu_register'))
 
 
 class LoggingTestCase(LiveServerTestCase):
@@ -95,21 +96,21 @@ class LoggingTestCase(LiveServerTestCase):
         self.browser.get(self.live_server_url)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
 
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_log_in').click()
+        self.browser.find_element(By.ID, 'toggle_button').click()
+        self.browser.find_element(By.ID, 'menu_log_in').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
 
         # log in with username
-        inputbox = self.browser.find_element_by_id('id_username')
+        inputbox = self.browser.find_element(By.ID, 'id_username')
         inputbox.send_keys(self.test_user.username)
-        inputbox = self.browser.find_element_by_id('id_password')
+        inputbox = self.browser.find_element(By.ID, 'id_password')
         inputbox.send_keys('TestPass123')
         inputbox.send_keys(Keys.ENTER)
         WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))  # msg = user probably cannot log in with username
 
         # logout
-        self.browser.find_element_by_id('toggle_button').click()
-        self.browser.find_element_by_id('menu_logout').click()
+        self.browser.find_element(By.ID, 'toggle_button').click()
+        self.browser.find_element(By.ID, 'menu_logout').click()
         WebDriverWait(self.browser, 10).until(cond.title_contains('Logout'))
 
 
