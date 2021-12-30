@@ -10,22 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
 import json
 import platform
+from pathlib import Path
 
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 if platform.system() == 'Windows':
-    config_path = 'etc/'
+    config_path = BASE_DIR / 'etc/'
     DEBUG = True
 else:
     config_path = '/etc/'
     DEBUG = False
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-with open(config_path + 'config_family_assistant.json') as config_file:
+with open(config_path / 'config_family_assistant.json') as config_file:
     config = json.load(config_file)
 
 # Quick-start development settings - unsuitable for production
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [(BASE_DIR / 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -133,13 +133,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static/css'),
-]
+STATICFILES_DIRS = [BASE_DIR / 'static/css']
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = 'homepage'
@@ -153,7 +151,3 @@ EMAIL_HOST_USER = config['EMAIL_USER']
 EMAIL_HOST_PASSWORD = config['EMAIL_PASS']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-if __name__ == '__main__':
-    print(BASE_DIR, os.path.join(BASE_DIR, 'static'))
-    print(STATIC_ROOT)

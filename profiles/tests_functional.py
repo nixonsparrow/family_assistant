@@ -1,5 +1,3 @@
-import time
-
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.contrib.auth.models import User
 from django.urls.base import reverse
@@ -8,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as cond
-from selenium.webdriver.common.by import By as by
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
@@ -75,7 +73,7 @@ class RegisterTestCase(LiveServerTestCase):
             self.browser.find_element_by_id('error_1_id_password2')
 
         self.enter_register_credentials(password2='WrongPassword123!@#')
-        WebDriverWait(self.browser, 10).until(cond.presence_of_element_located((by.ID, "error_1_id_password2")))
+        WebDriverWait(self.browser, 10).until(cond.presence_of_element_located((By.ID, "error_1_id_password2")))
 
     def test_register_email_not_correct(self):
         self.browser.get(self.live_server_url + reverse('register'))

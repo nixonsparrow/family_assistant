@@ -113,6 +113,21 @@ class LoggingTestCase(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(cond.title_contains('Logout'))
 
 
+class PasswordResetTestCase(LiveServerTestCase):
+    def setUp(self):
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
+        self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
+                                                  email='testuser@test.com')
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_password_reset(self):
+        pass
+
+
 class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         options = Options()
