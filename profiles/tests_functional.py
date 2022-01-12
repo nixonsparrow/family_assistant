@@ -1,7 +1,7 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.contrib.auth.models import User
 from django.urls.base import reverse
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -140,3 +140,41 @@ class UpdateProfileTestCase(LiveServerTestCase):
 
         for i in range(4):
             self.assertNotEqual(old[i], new[i])
+
+
+class LoginTestCase(LiveServerTestCase):
+    def setUp(self):
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Firefox(options=options)
+        self.test_user = User.objects.create_user(username='TestUser', password='TestPass123',
+                                                  email='testuser@test.com')
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_login_correct_credentials(self):
+        self.browser.get(self.live_server_url + reverse('login'))
+        WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
+
+        inputbox = self.browser.find_element(By.ID, 'id_username')
+        inputbox.send_keys(self.test_user.username)
+        inputbox = self.browser.find_element(By.ID, 'id_password')
+        inputbox.send_keys('TestPass123')
+        inputbox.send_keys(Keys.ENTER)
+        WebDriverWait(self.browser, 10).until(cond.title_contains('Homepage'))
+
+    def test_login_incorrect_credentials(self):
+        self.browser.get(self.live_server_url + reverse('login'))
+        WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
+
+        inputbox = self.browser.find_element(By.ID, 'id_username')
+        inputbox.send_keys(self.test_user.username)
+        inputbox = self.browser.find_element(By.ID, 'id_password')
+        inputbox.send_keys('TestPass1234')
+        inputbox.send_keys(Keys.ENTER)
+
+        with self.assertRaises(TimeoutException):
+            WebDriverWait(self.browser, 5).until(cond.title_contains('Homepage'))
+
+        WebDriverWait(self.browser, 10).until(cond.title_contains('Log In'))
